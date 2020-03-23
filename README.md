@@ -1,4 +1,4 @@
-# Amazon-like-Web-App
-The goal is to create an amazon like web application.
+# Freetail
+The goal is to create an amazon like retail store web application.
 
-Deployed Version(Heroku): https://ksd11web322.herokuapp.com/
+Deployed Version(Heroku): https://fretail.herokuapp.com
