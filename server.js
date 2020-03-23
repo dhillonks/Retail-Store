@@ -178,10 +178,10 @@ app.post("/register", (req, res) => {
         //Form data is valid:
         const msg = {
             to: req.body.email,
-            from: 'donotreply@ksdhillon11Amazon.com',
-            subject: "Welcome to our Kunwarvir's Amazon",
-            text: `Hi ${req.body.name}, Thank you for registering!.`,
-            html: `<strong>Hi ${req.body.name}, Thank you for registering!.</strong>`,
+            from: 'donotreply@ksdhillon11Fretail.com',
+            subject: "Welcome to our Fretail!",
+            text: `Hi ${req.body.name}, Thank you for registering on Fretail!.`,
+            html: `<strong>Hi ${req.body.name}, Thank you for registering on Fretail!.</strong>`,
         };
         sgMail.send(msg).then(()=>{
             res.render("dashboard", {
