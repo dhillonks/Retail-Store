@@ -1,0 +1,26 @@
+<div id="regDiv">
+    <div id="formDiv">
+        <div id="formHeading">Sign-In</div>
+        <form id="form" action="/login" method="POST">       
+
+            <label for="email">Email</label>
+            <input type="text" name="email" tabindex="1" value={{userEmail}}>
+
+            {{#if eError}}
+            <div class="formError">{{eErrorMsg}}</div>
+            {{/if}}
+
+            <label for="pass">Password</label>
+            <input type="password" name="pass" tabindex="3" placeholder="At least 6 characters">
+
+            {{#if pError}}
+            <div class="formError">{{pErrorMsg}}</div>
+            {{/if}}
+
+            <div id="buttonWrapper">
+                <input id="submitButton" type="submit" tabindex="11" value="Sign-In">
+            </div>
+            
+        </form>
+    </div>
+</div>

@@ -1,0 +1,45 @@
+<div id="regDiv">
+    <div id="formDiv">
+        <div id="formHeading">Create account</div>
+        <form id="form" action="/register" method="post">
+            <label for="name">Your Name</label>
+            <input type="text" name="name" tabindex="1" maxlength="50" value={{userName}}>
+            
+            {{#if nError}}
+            <div class="formError">{{nErrorMsg}}</div>
+            {{/if}}
+
+            <label for="email">Email</label>
+            <input type="text" name="email" tabindex="3" value={{userEmail}}>
+            
+            {{#if eError}}
+            <div class="formError">{{eErrorMsg}}</div>
+            {{/if}}
+
+            <label for="pass">Password</label>
+            <input type="password" name="pass" tabindex="5" placeholder="At least 6 characters">
+            
+            {{#if pError}}
+            <div class="formError">{{pErrorMsg}}</div>
+            {{/if}}
+
+            <label for="passAgain">Password Again</label>
+            <input type="password" name="passAgain" tabindex="6">
+            
+            {{#if pAgainError}}
+            <div class="formError">{{pAgainErrorMsg}}</div>
+            {{/if}}
+
+            <div id="buttonWrapper">
+                <input id="submitButton" type="submit" tabindex="11" value="Create your account">
+            </div>
+            
+        </form>
+        <div class="legalNotice">By creating an account, you agree to our Terms and Conditions of use</div>
+        <div class="signIn">
+            <div>
+                Already have an account?   <a href ="/login">Sign in</a>
+            </div>
+        </div>
+    </div>
+</div>

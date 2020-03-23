@@ -1,0 +1,30 @@
+<div class="prodBody">
+    <div class="list">
+        <div class="listHeading">
+            Footwear
+        </div>
+        <ul class="categoryList">
+            {{#each category}}
+                <li>{{this}}</li>
+            {{/each}}
+        </ul>
+    </div>
+    <div class="productsContainer">
+        {{#each prod}}
+            <div class="card">
+                <div class="c-image">
+                    <img src="{{this.image}}">
+                </div>
+                <div class="c-cat">
+                    {{#if this.bestSeller}}
+                        <span style="color: red; font-weight: bold;">BestSeller</span>
+                    {{/if}}
+                    {{this.category}}
+                </div>
+                <div class="c-title">{{this.title}}</div>
+                <div class="price">${{this.price}}</div>
+                <div><button>Add to Cart</button></div>
+            </div>
+        {{/each}}
+    </div>
+</div>
