@@ -1,21 +1,26 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const categories = [
-    {
-        category:'Watches',
-        img:'/img/c3.jpg'
+const productCategoriesSchema = Schema({
+    category:{
+        type: String,
+        required: true,
+        trim: true
     },
-    {
-        category:'Footwear',
-        img: '/img/c1.jpg'
+    img:{
+        type: String,
+        required: true,
+        trim: true
     },
-    {
-        category:'Fitness',
-        img:'/img/c2.jpg'
+    dateAdded:{
+        type: Date,
+        default: Date.now
     },
-    {
-        category:'Electronics',
-        img:'/img/c4.jpg'
-    },
-]
+    addedBy:{
+        type: String
+    }
+});
 
-module.exports=categories;
+const categoriesModel = mongoose.model('Category', productCategoriesSchema);
+
+module.exports = categoriesModel;

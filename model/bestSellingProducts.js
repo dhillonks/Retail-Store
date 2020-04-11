@@ -1,16 +1,21 @@
-/*
-bestSellers is an array containing best selling products= [{name: '', image: ''}]
-*/
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const bestSellers = {
-    category: 'Footwear',
-    
-    prods: [
-    {name: "LeBron", image: "/img/1.jpg"},
-    {name: "AirJordan 1", image: "/img/4.jpg"},
-    {name: "SF AirForce 1", image: "/img/5.jpg"},
-    {name: "Airmax 90", image: "/img/6.jpg"}
-    ]
-}
+const bestSellerSchema = new Schema({
+    category: {
+        type: String
+    },
+    prods: {
+        type: [{
+            name: String,
+            image: String
+        }]
+    },
+}, {
+    toObject:{
+        virtuals: true
+    }
+});
 
-module.exports = bestSellers;
+const bestSellerModel = mongoose.model('bestseller', bestSellerSchema);
+module.exports = bestSellerModel;

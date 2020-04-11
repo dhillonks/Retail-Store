@@ -1,54 +1,38 @@
-const prods = [  
-    {
-        image: '/img/1.jpg',
-        title: 'LeBron',
-        price: 70,
-        category: 'Sneakers',
-        bestSeller: true
-    },
-    {
-        image: '/img/2.jpg',
-        title: 'Black Passiano',
-        price: 40,
-        category: 'Formals',
-        bestSeller: false
-    },
-    {
-        image: '/img/3.jpg',
-        title: 'Pink Passiano',
-        price: 60,
-        category: 'Formals',
-        bestSeller: false
-    },
-    {
-        image: '/img/4.jpg',
-        title: 'AirJordan 1',
-        price: 70,
-        category: 'Sneakers',
-        bestSeller: true
-    },
-    {
-        image: '/img/5.jpg',
-        title: 'SF AirForce 1',
-        price: 80,
-        category: 'Sneakers',
-        bestSeller: true
-    },
-    {
-        image: '/img/6.jpg',
-        title: 'Airmax 90',
-        price: 90,
-        category: 'Sneakers',
-        bestSeller: true
-    },
- ];
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-let prodCategories = new Set(prods.map(prod => {
-    return prod.category;
-}));
+const productSchema = new Schema({
+    image:{
+        type: String,
+        required: true
+    },
+    title:{
+        type:String,
+        required: true
+    },
+    price:{
+        type: Number,
+        required: true
+    },
+    category:{
+        type: String,
+        required: true
+    },
+    bestSeller:{
+        type: Boolean,
+        required: true
+    },
+    description:{
+        type: String
+    },
+    dateAdded:{
+        type: Date,
+        default: Date.now
+    },
+    addedBy:{
+        type: String
+    }
+})
 
-prodCategories = Array.from(prodCategories);
-
-let products = {products: prods, categories: prodCategories};
-
-module.exports=products;
+const productModel = mongoose.model('Product', productSchema);
+module.exports = productModel;
