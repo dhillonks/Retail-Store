@@ -74,6 +74,9 @@ ul{
     border: 1px solid transparent;
     border-radius: 0px 2px 2px 0px;
 }
+#go:hover, #go:active{
+    cursor: pointer;
+}
 .menu-item{
     flex: 1;
     height: 100%;
@@ -343,6 +346,7 @@ CSS for products page:
     color: black;
 }
 .productsContainer{
+    background-color: white;
     padding: 20px;
     flex: 5;
     display: grid;
@@ -403,15 +407,135 @@ Card
   .card button:hover {
     opacity: 0.7;
   }
+
+  /*
+  Product Search:
+  */
+.searchprodBody{
+    font-family: 'Lato', sans-serif;
+}
+.searchError{
+    margin: 10px;
+    padding: 10px;
+    background-color: white;
+    font-weight: 550;
+    text-align: center;
+}
   /*
   Style for dashboard page:
   */
 #dashboard{
     font-family: 'Lato' , sans-serif;
-    padding: 100px;
     font-size: 18px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }  
+
+/*
+    Style for Inventory Module
+*/
+#invDashHead{
+    width: 100%;
+    background-color: white;
+    flex-direction: column;
+    border: 1px #ddd solid;
+    border-radius: 4px;
+}
+#invDash{
+    padding: 5px;
+    padding-left: 30px;
+    padding-right: 30px;
+    background-color: #e7c293;
+    font-weight: bold;
+}
+#invDashOptions{
+    grid-area: rows;
+    display:flex;
+    flex-direction: column;
+}
+.invOption > a:hover, a:active{
+    font-weight: bold;
+}
+.invOption > a:visited, a:link{
+    color: black;
+    text-decoration: none;
+}
+#invDash > a:hover, a:active{
+    text-decoration: underline;
+    font-weight: 700;
+}
+#invDash > a:visited, a:link{
+    color: black;
+    text-decoration: none;
+}
+.invOption{
+    flex: 1;
+    padding: 8px;
+    margin: 2px;
+}
+.invOption > a{
+    width: 100%;
+}
+
+.invTable{
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+.invTable > thead th{
+    border: 1px solid black;
+}
+.invTable > th, td{
+    padding: 8px;
+}
+.tableIndex{
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.invTable > tbody > tr:nth-child(odd){
+    background-color: rgb(237, 238, 229);
+}
+.invTable > tbody > tr:nth-child(even){
+    background-color: white;
+}
+.invSearchContainer{
+    padding-top: 5px;
+    padding-left: 25vw;
+    padding-right: 25vw;
+    padding-bottom: 20px;
+}
+.invSearch{
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid rgb(170, 170, 170);
+}
+.invSearch > form > #go {
+    background-color: #e7c293;
+}
+.invSearch > form{
+    display: flex;
+    flex-direction: row;
+}
+.invAddDash{
+    display: flex;
+    flex-direction: column;
+}
+.invRowLink > a:hover, a:active{
+    font-weight: bold;
+}
+.invRowLink > a:link, a:visited{
+    color: white;
+    text-decoration: none;
+}
+.invRowLink{
+    color: white;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: #212013;
+}
 /* 
 -----------------------------------------------
 Responsive Structure
@@ -466,5 +590,11 @@ Responsive Structure
         padding: 0;
         overflow-x: hidden;
         margin-left: -20px;
+    }
+
+    /*Inv clerk searchbar*/
+    .invSearchContainer{
+        padding-left: 5vw;
+        padding-right: 5vw;
     }
 }

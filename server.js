@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const generalRoutes = require('./controllers/General');
 const userRoutes = require('./controllers/User');
 const productRoutes = require('./controllers/Product');
+const invClerkRoutes = require('./controllers/Clerk');
 
 //Connecting to mongoDB through mongoose
 mongoose.connect(process.env.MONGO_DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -28,11 +29,22 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(express.static("public"));
 
+//Allows specific forms/links that are submitted/pressed to send PUT and DELETE requests
+app.use((req, res, next) => {
+    if(req.query.method === "PUT"){
+        req.method = "PUT";
+    }
+    else if(req.query.method === "DELETE"){
+        req.method = "DELETE";
+    }
+    next();
+});
+
 //Mapping express to all router objects
 app.use("/",generalRoutes);
 app.use("/user",userRoutes);
 app.use("/products",productRoutes);
-
+app.use("/inv", invClerkRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

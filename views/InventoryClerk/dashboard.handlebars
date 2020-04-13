@@ -1,0 +1,40 @@
+<div id="dashboard">    
+    <div id="invDashHead">
+        <div id="invDash"><a href="/inv">Product Management</a></div>
+        <div id="invDashOptions">
+            <div class = "invOption"><a href="/inv/add">Add new product</a></div>
+        </div>
+        <div class="invSearchContainer">
+            <div class="invSearch">
+                            <form action="/products/search" method="post">
+                                <input id="searchKeywords" type="text" name="searchKeywords" tabindex = "9" placeholder = "Search product name" value ="{{searchWord}}">
+                                <input type="submit" id="go" value="Go">
+                            </form>
+            </div>
+        </div>
+        <div id="invTable">
+            <table class = "invTable">
+            <thead>
+                <tr>
+                    <th class="tableIndex" scope="col">No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Category</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>                
+                {{#each prod}}
+                <tr>
+                    <td class="tableIndex" scope="row">{{this.index}}</td>
+                    <td>{{this.title}}</td>
+                    <td>{{this.category}}</td>
+                    <td class= "invRowLink"><a href="/inv/{{this.id}}?method=PUT">Edit</a></td>
+                    <td class= "invRowLink"><a href="/inv/{{this.id}}?method=DELETE">Delete</a></td>
+                </tr>
+                {{/each}}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>

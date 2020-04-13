@@ -4,8 +4,8 @@
                 <a class="menu-link" href="/home" tabindex="-1"><div class="menu-logo"><img src="/img/logo.png"></div></a>
                 <div id="menu-options">
                     <div class="navSearch">
-                        <form type="/" method="get">
-                            <input id="searchKeywords" type="text" name="searchKeywords" tabindex = "9">
+                        <form action="/products/search" method="post">
+                            <input id="searchKeywords" type="text" name="searchKeywords" tabindex = "9" placeholder = "Search product name" value ="{{searchWord}}">
                             <input type="submit" id="go" value="Go">
                         </form>
                     </div>
