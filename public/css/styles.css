@@ -476,7 +476,14 @@ Card
     display:flex;
     flex-direction: column;
 }
+.invOption{
+    color: black;
+}
+.invOption > a{
+    color: black;
+}
 .invOption > a:hover, a:active{
+    color: black;
     font-weight: bold;
 }
 .invOption > a:visited, a:link{
