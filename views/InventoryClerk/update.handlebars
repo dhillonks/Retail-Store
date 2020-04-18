@@ -6,19 +6,19 @@
         <div id="formHeading">Edit product</div>
         <form id="form" action="/inv/update/{{this.id}}?method=PUT" method="POST" enctype="multipart/form-data">
             <label for="title">Product Title</label>
-            <input type="text" name="title" tabindex="1" maxlength="50" placeholder="AirJordan 1" value={{pTitle}} >
+            <input type="text" name="title" tabindex="1" maxlength="50" placeholder="AirJordan 1" value="{{pTitle}}">
 
             <label for="price">Price</label>
-            <input type="number" name="price" tabindex="3" placeholder="90" min="0" value={{pPrice}} >
+            <input type="number" name="price" tabindex="3" placeholder="90" min="0" value="{{pPrice}}" >
 
             <label for="desc">Description</label>
-            <input type="text" name="desc" tabindex="5" placeholder="Black and white" value={{pDesc}}>
+            <input type="text" name="desc" tabindex="5" placeholder="Black and white" value="{{pDesc}}">
 
             <label for="category">Category</label>
-            <input type="text" name="category" tabindex="6" placeholder="Sneakers" value={{pCategory}}>
+            <input type="text" name="category" tabindex="6" placeholder="Sneakers" value="{{pCategory}}">
             
             <label for="quantity">Quantity</label>
-            <input type="number" name="quantity" tabindex="7" placeholder="10" min="0" value={{pQuantity}}>
+            <input type="number" name="quantity" tabindex="7" placeholder="10" min="0" value="{{pQuantity}}">
 
             <label for="bestSeller">BestSeller?
                 {{#if pBestSeller}}
@@ -32,7 +32,7 @@
             <label for="pic">Change picture</label>
             <input type="file" name="pic" tabindex = "10">
 
-            <div class="updatePicImgWrap"><img class="updatePicImg" src={{pImage}}></div>
+            <div class="updatePicImgWrap"><img class="updatePicImg" src="{{pImage}}"></div>
 
             {{#if picError}}
             <div class="formError">{{picErrorMsg}}</div>
