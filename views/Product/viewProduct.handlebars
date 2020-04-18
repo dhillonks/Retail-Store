@@ -13,9 +13,9 @@
         {{/if}}
         <form class = "vProdForm" action="/products/cart/{{pID}}" method="POST">
             <label>Quantity:
-                <select>
+                <select name="quantity">
                     {{#times pQuantity}}
-                        <option name="quantity" value={{this}}>{{this}}</option>>
+                        <option value={{this}}>{{this}}</option>>
                     {{/times}}
                 </select>
             </label>

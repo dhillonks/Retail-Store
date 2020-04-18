@@ -758,6 +758,20 @@ Card
     font-size: 18px;
     padding-left: 20px;
 }
+.shRemoveLink{
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-top: 2px;
+    margin-left: 5px;
+    border: 2px solid grey;
+}
+.shRemoveLink:hover, .shRemoveLink:active{
+    color: rgb(112, 112, 112);
+    font-weight: bold;
+}
+.shRemoveLink:link, .shRemoveLink:visited{
+    color: rgb(112, 112, 112);
+}
 .shProductTotal > span{
     color: green;
 }

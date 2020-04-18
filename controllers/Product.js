@@ -163,4 +163,27 @@ router.post("/cart/:id", isLoggedIn, (req, res) => {
     })
     .catch(err=>console.log(err));
 });
+//Add to cart route:
+router.get("/removecart/:id", isLoggedIn, (req, res) => {
+    //Store the cart item on the users cart:
+    userModel.findOne({_id: req.session.userInfo._id})
+    .then((user)=>{
+        let index = user.cart.findIndex(i => req.params.id === i.productID);
+
+        if(index != -1){
+            user.cart.splice(index, 1);
+            req.session.userInfo = user;
+            userModel.updateOne({_id: req.session.userInfo._id}, user)
+            .then(() => {
+                res.redirect("/user/cart");
+            })
+            .catch(err => console.log(err))
+        }
+        else{
+            res.redirect("user/cart");
+        }
+    })
+    .catch(err=>console.log(err));
+});
+
 module.exports = router;

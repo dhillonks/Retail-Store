@@ -14,8 +14,7 @@
                 <div class="shProductDesc">Description: {{this.desc}}</div>
                 <div class="shProductPrice">Price: <span>${{this.price}}</span></div>
             </div>
-            <div class="shWrap2"></div>
-            <div class="shProductQuantity">Quantity: {{this.quantity}}</div>
+            <div class="shProductQuantity">Quantity: {{this.quantity}}<a class="shRemoveLink" href="/products/removecart/{{this.pID}}">Remove</a></div>
             <div class="shProductTotal">Item Total: <span>${{this.itemTotal}}</span></div>
         </div>
         {{/each}}
