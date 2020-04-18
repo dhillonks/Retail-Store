@@ -67,7 +67,8 @@ router.post("/login", (req, res) => {
     }
     else{
         //Form data is valid:
-        userModel.findOne({email: req.body.email})
+        const emailRegex = new RegExp(req.body.email, i);
+        userModel.findOne({email: emailRegex})
         .then(user=> {
             //Email not found:
             if(user == null){
