@@ -322,7 +322,7 @@ router.post("/register", (req, res) => {
         //Form data is valid:
         const newUser = {
             name: req.body.name,
-            email: req.body.email,
+            email: req.body.email.toLowerCase(),
             password: req.body.pass
         };
         const user = new userModel(newUser);
