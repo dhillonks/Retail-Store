@@ -958,4 +958,7 @@ Responsive Structure
     .shProductTotal > span{
         color: green;
     }
+    .invTable{
+        font-size: 14px;
+    }
 }
