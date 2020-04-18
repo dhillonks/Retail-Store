@@ -105,7 +105,7 @@ router.get("/view/:id", (req, res) => {
                 pPrice: product.price,
                 pDescription: product.description,
                 pQuantity: product.quantity,
-                inStock: product.quantity > 0,
+                inStock: product.quantity > 1,
                 helpers: {
                     times: function(n, block) {
                         var accum = '';
