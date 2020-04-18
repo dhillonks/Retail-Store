@@ -94,9 +94,20 @@ router.post("/search", (req, res) => {
 })
 //Whenever the user clicks on a product to view it:
 router.get("/view/:id", (req, res) => {
+    
+    let quantityUser = 0;
+    //Check to see if user doesn't already have the same product in cart:
+    if(req.session.userInfo){
+        let index = req.session.userInfo.cart.findIndex(i => i.productID === req.params.id);
+        if(index != -1){
+            quantityUser = req.session.userInfo.cart[index].quantity;
+        }
+    }
+    console.log(quantityUser);
     productModel.findOne({_id: req.params.id})
     .then(product => {
         if(product){
+            console.log(product.quantity);
             res.render("Product/viewProduct", {
                 title: product.title,
                 pTitle: product.title,
@@ -104,12 +115,13 @@ router.get("/view/:id", (req, res) => {
                 pImage: product.image,
                 pPrice: product.price,
                 pDescription: product.description,
-                pQuantity: product.quantity,
-                inStock: product.quantity > 1,
+                pQuantity: product.quantity - quantityUser,
+                maxQuantity: product.quantity,
+                inStock: (product.quantity - quantityUser) > 0,
                 helpers: {
                     times: function(n, block) {
                         var accum = '';
-                        for(var i = 1; i < n; ++i)
+                        for(var i = 1; i <= n; ++i)
                             accum += block.fn(i);
                         return accum;
                     }
@@ -131,6 +143,9 @@ router.post("/cart/:id", isLoggedIn, (req, res) => {
             //Check if the product already exists in the cart:
             let index = user.cart.findIndex(i => i.productID === req.params.id);
             if(index != -1){
+                console.log('UserQuantity', user.cart[index].quantity);
+                console.log('q',req.body.quantity);
+                console.log('total',req.body.maxQuantity);
                 //Ensuring that only quantity in stock is allocated on the cart
                 if(user.cart[index].quantity + req.body.quantity <= req.body.maxQuantity){
                     //Increment the quantity:
