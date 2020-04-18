@@ -1,44 +1,44 @@
-<div id="dashboard" class="invAddDash">    
+<div id="dashboard" class="invAddDash">
     <div id="invDashHead">
-        <div id="invDash"><a href="/inv">Product Management</a></div>
+        <div id="invDash"><a href="/inv">Product Management Home</a></div>
     </div>
-    <div>
-        <div id="formDiv">
+    <div id="formDiv">
         <div id="formHeading">Add product</div>
         <form id="form" action="/inv/add" method="POST" enctype="multipart/form-data">
             <label for="title">Product Title</label>
-            <input type="text" name="title" tabindex="1" maxlength="50" placeholder="AirJordan 1" value={{userName}} >
+            <input type="text" name="title" tabindex="1" maxlength="50" placeholder="AirJordan 1" value={{pTitle}} >
 
             <label for="price">Price</label>
-            <input type="number" name="price" tabindex="3" placeholder="90" min="0" value={{userEmail}} >
+            <input type="number" name="price" tabindex="3" placeholder="90" min="0" value={{pPrice}} >
 
             <label for="desc">Description</label>
-            <input type="text" name="desc" tabindex="5" placeholder="Black and white">
+            <input type="text" name="desc" tabindex="5" placeholder="Black and white" value={{pDesc}}>
 
             <label for="category">Category</label>
-            <input type="text" name="category" tabindex="6" placeholder="Sneakers">
+            <input type="text" name="category" tabindex="6" placeholder="Sneakers" value={{pCategory}}>
             
             <label for="quantity">Quantity</label>
-            <input type="password" name="quantity" tabindex="7" placeholder="10">
+            <input type="number" name="quantity" tabindex="7" placeholder="10" min="0" value={{pQuantity}}>
 
-            <label for="bestSeller">BestSeller?</label>
-            <label for="bestSeller">
-                <input type="radio" name="bestSeller" value="1" tabindex="8" placeholder="">Yes
-            </label>
-            <label for="bestSeller">
-                <input type="radio" name="bestSeller" value="0" tabindex="9" placeholder="" checked>No
+            <label for="bestSeller">BestSeller?
+                {{#if pBestSeller}}
+                    <input type="radio" name="bestSeller" value="Yes" tabindex="8" placeholder="" checked>Yes
+                    <input type="radio" name="bestSeller" value="No" tabindex="9" placeholder="" >No
+                {{else}}
+                    <input type="radio" name="bestSeller" value="Yes" tabindex="8" placeholder="">Yes
+                    <input type="radio" name="bestSeller" value="No" tabindex="9" placeholder="" checked>No
+                {{/if}}
             </label>
             <label for="pic">Upload picture</label>
             <input type="file" name="pic" tabindex = "10">
 
-            {{#if pAgainError}}
-            <div class="formError">{{pAgainErrorMsg}}</div>
+            {{#if picError}}
+            <div class="formError">{{picErrorMsg}}</div>
             {{/if}}
 
             <div id="buttonWrapper">
                 <input id="submitButton" type="submit" tabindex="11" value="Add Product">
             </div>
         </form>
-    </div>
     </div>
 </div>

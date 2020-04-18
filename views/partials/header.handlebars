@@ -5,14 +5,28 @@
                 <div id="menu-options">
                     <div class="navSearch">
                         <form action="/products/search" method="post">
+                            <select name="category" id="searchCategory">
+                                <option value="All">Category</option>
+                                <option value="All">All</option>
+                                {{#each sCategories}}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                            </select>
                             <input id="searchKeywords" type="text" name="searchKeywords" tabindex = "9" placeholder = "Search product name" value ="{{searchWord}}">
                             <input type="submit" id="go" value="Go">
                         </form>
                     </div>
+                    <div class="menu-itemContainer">
                     <a class= "menu-link" href="/home" tabindex="-1"><div class="menu-item">Home</div></a>
                     <a class= "menu-link" href="/products" tabindex="-1"><div class="menu-item">Products</div></a>
+                    {{#if user}}
+                    <a class= "menu-link" href="/user/dashboard" tabindex="-1"><div class="menu-item">Profile</div></a>
+                    <a class= "menu-link" href="/user/cart" tabindex="-1"><div class="menu-item">Cart<span class="navCart">{{noOfItems}}</span></div></a>
+                    {{else}}
                     <a class= "menu-link" href="/user/register" tabindex="-1"><div class="menu-item">Register</div></a>
                     <a class= "menu-link" href="/user/login" tabindex="-1"><div class="menu-item">Login</div></a>
+                    {{/if}}
+                    </div>
                 </div>
             </ul>
         </nav>

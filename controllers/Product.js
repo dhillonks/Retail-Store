@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
+const isLoggedIn = require('../middleware/auth')
 //Models:
 const productModel = require('../model/products');
+const userModel = require('../model/user');
 
 //Products route
 router.get("/", (req,res) => {
-
     productModel.find()
         .then(products => {
             const filteredProducts = products.map(product => {
@@ -15,8 +16,10 @@ router.get("/", (req,res) => {
                     image: product.image,
                     title: product.title,
                     price: product.price,
+                    description: product.description,
+                    bestSeller: product.bestSeller,
                     category: product.category,
-                    bestSeller: product.bestSeller
+                    quantity: product.quantity
                 }
             });
 
@@ -38,7 +41,35 @@ router.get("/", (req,res) => {
 //Search products functionality:
 router.post("/search", (req, res) => {
     const regex = new RegExp(req.body.searchKeywords, 'i');
-    productModel.find({title: regex})
+    
+    //Filtering by category:
+    if(req.body.category === "All"){
+        //Match products by search:
+        productModel.find({title: regex})
+        .then(products => {
+            const filteredProducts = products.map(product => {
+                return {
+                    id: product._id,
+                    title: product.title,
+                    image: product.image,
+                    price: product.price,
+                    category: product.category,
+                    bestSeller: product.bestSeller,
+                    quantity: product.quantity
+                }
+            });
+            res.render("Product/search", {
+                title: "Products",
+                prod: filteredProducts,
+                notFound: products.length === 0,
+                searchWord: req.body.searchKeywords
+            })
+        })
+    }
+    else{
+        productModel.find({
+            title: regex,
+            category: req.body.category})
         .then(products => {
             const filteredProducts = products.map(product => {
                 return {
@@ -57,6 +88,79 @@ router.post("/search", (req, res) => {
                 searchWord: req.body.searchKeywords
             })
         })
+        .catch(err=>console.log(`Error while searching products ${err}`))
+    }
+    
 })
-
+//Whenever the user clicks on a product to view it:
+router.get("/view/:id", (req, res) => {
+    productModel.findOne({_id: req.params.id})
+    .then(product => {
+        if(product){
+            res.render("Product/viewProduct", {
+                title: product.title,
+                pTitle: product.title,
+                pID: product._id,
+                pImage: product.image,
+                pPrice: product.price,
+                pDescription: product.description,
+                pQuantity: product.quantity,
+                inStock: product.quantity > 0,
+                helpers: {
+                    times: function(n, block) {
+                        var accum = '';
+                        for(var i = 1; i < n; ++i)
+                            accum += block.fn(i);
+                        return accum;
+                    }
+                }
+            });
+        }
+    })
+    .catch(err=>console.log(`Error finding product to view ${err}`));
+})
+//Add to cart route:
+router.post("/cart/:id", isLoggedIn, (req, res) => {
+    req.body.quantity = parseInt(req.body.quantity);
+    req.body.maxQuantity = parseInt(req.body.maxQuantity);
+    //Store the cart item on the users cart:
+    userModel.findOne({_id: req.session.userInfo._id})
+    .then((user)=>{
+        let notAddedToCart = true;
+        if(req.body.quantity < req.body.maxQuantity){
+            //Check if the product already exists in the cart:
+            let index = user.cart.findIndex(i => i.productID === req.params.id);
+            if(index != -1){
+                //Ensuring that only quantity in stock is allocated on the cart
+                if(user.cart[index].quantity + req.body.quantity < req.body.maxQuantity){
+                    //Increment the quantity:
+                    user.cart[index].quantity+=req.body.quantity;
+                    notAddedToCart = false;
+                }                
+            }
+            else{
+                notAddedToCart = false;
+                //Add item to the cart
+                const item = {
+                    productID: req.params.id,
+                    quantity: req.body.quantity
+                }
+                user.cart.push(item);
+            }
+        }
+        if(notAddedToCart){
+            //Not enough quantity in stock
+            res.redirect("/home");
+        }
+        else{
+            req.session.userInfo = user;
+            userModel.updateOne({_id: user._id}, user)
+            .then(()=>{
+                res.redirect("/products");
+            })
+            .catch(err=>console.log(err));
+        }
+    })
+    .catch(err=>console.log(err));
+});
 module.exports = router;

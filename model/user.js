@@ -24,6 +24,12 @@ const userSchema = new Schema({
     type: {
         type: String,
         default: "User"
+    },
+    cart: {
+        type: [{
+            productID: String,
+            quantity: Number
+        }]
     }
 });
 

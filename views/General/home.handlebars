@@ -15,7 +15,10 @@
             <h2>Best Sellers in {{bestSeller.category}}</h2>
             <div class="bestSellers">
                 {{#each bestSeller.prods}}
-                <div class=bestSellerImage><img src={{this.image}}></div>
+                <div class=bestSellerImage>
+                    <img src={{this.image}}>
+                    <a class="vProdLink" href="/products/view/{{this.id}}"><span class="vProdLinkSpan"></span></a>
+                </div>
                 {{/each}}
             </div>
         </div>

@@ -1,0 +1,29 @@
+<div class="viewProdBody">
+    <div class="vProdImage">
+        <img src="{{pImage}}">
+    </div>
+    <div class="vProdBody">
+        <div class="vProdTitle">{{pTitle}}</div>
+        <div class="vProdPrice">Price: <span>${{pPrice}}</span></div>
+        <div class="vProdDesc">Description: {{pDescription}}</div>
+        {{#if inStock}}
+        <div class="vProdInStock">In Stock</div>
+        {{else}}
+        <div class="vProdNotInStock">Out of Stock</div>
+        {{/if}}
+        <form class = "vProdForm" action="/products/cart/{{pID}}" method="POST">
+            <label>Quantity:
+                <select>
+                    {{#times pQuantity}}
+                        <option name="quantity" value={{this}}>{{this}}</option>>
+                    {{/times}}
+                </select>
+            </label>
+            <input name="maxQuantity" type="hidden" value={{pQuantity}}>
+            <div id="buttonWrapper">
+                <input id="submitButton" type="submit" value="Add to cart">
+            </div>
+        </form>
+        
+    </div>
+</div>

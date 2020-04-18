@@ -1,9 +1,14 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 
 const categoriesModel = require('../model/productCategories');
 const bestSellersModel = require('../model/bestSellingProducts');
+const productModel = require('../model/products');
+const userModel = require('../model/user');
+const isLoggedIn = require('../middleware/auth');
+const dashBoardLoader = require('../middleware/authorization');
 
 //Email API
 const sgMail = require('@sendgrid/mail');
@@ -61,13 +66,69 @@ router.post("/login", (req, res) => {
     }
     else{
         //Form data is valid:
-        res.render("General/home", {
-            title: "Home Page",
-            bestSeller: bestSellersModel,
-            prodCategory: categoriesModel
+        userModel.findOne({email: req.body.email})
+        .then(user=> {
+            //Email not found:
+            if(user == null){
+                res.render("User/login", {
+                    title: "Login",
+                    userEmail: req.body.email,
+                    eErrorMsg: 'Email and/or Password are incorrect',
+                    eError: true,
+                    pErrorMsg: passErrorMsg,
+                    pError: isPassError 
+                })
+            }
+            else{
+                //Comparing entered password to the one stored:
+                bcrypt.compare(req.body.pass, user.password)
+                .then(isMatched => {
+                    if(isMatched){
+                        //Create the session:
+                        req.session.userInfo = user;
+                        let x = req.session.userInfo.cart.reduce((a, b) => a + (b.quantity || 0), 0);
+                        req.session.noOfItems = x;
+                        res.redirect("/User/dashboard");
+                    }
+                    else{
+                        res.render("User/login", {
+                            title: "Login",
+                            userEmail: req.body.email,
+                            eErrorMsg: 'Email and/or Password are incorrect',
+                            eError: true,
+                            pErrorMsg: passErrorMsg,
+                            pError: isPassError 
+                        })
+                    }
+                })
+                .catch(err=>console.log(err));
+            }
         })
+        .catch(err=>console.log(`Error while finding user: ${err}`))
     }
 });
+//Dashboard route
+router.get("/dashboard", isLoggedIn, dashBoardLoader);
+//Cart:
+router.get("/cart", isLoggedIn, (req, res) => {
+    if(req.session.noOfItems > 0){
+        isCartEmpty = false;
+        //Get the products that are in the users cart:
+        const userCart = req.session.userInfo.cart;
+        const cartProdIDs = userCart.map(i => i.productID);
+
+        //Finding corresponding products
+        productModel.find({_id: {$in: cartProdIDs}})
+        .then((products)=>{
+            console.log(products);
+        })
+        .catch(err=>console.log(err));
+    }
+    else{
+        //Cart is empty
+        res.render("User/cart", {title: "My Cart", noProducts: true});
+    }
+})
 //Register Form:
 router.post("/register", (req, res) => {
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -84,6 +145,7 @@ router.post("/register", (req, res) => {
 
     let errorMessages = false;
 
+    let promise1;
     //Validating name:
     if(req.body.name === ""){
         nameErrorMsg = "Enter your name";
@@ -131,6 +193,7 @@ router.post("/register", (req, res) => {
             errorMessages = true;
         }
     }
+    
     if(errorMessages){
         //Invalid form:
         res.render("User/register", {
@@ -145,25 +208,56 @@ router.post("/register", (req, res) => {
             pError: isPassError,
             pAgainErrorMsg: passAgainErrorMsg,
             pAgainError: isPassAgainError
-        })
+        });
     }
     else{
         //Form data is valid:
-        const msg = {
-            to: req.body.email,
-            from: 'donotreply@ksdhillon11Fretail.com',
-            subject: "Welcome to our Fretail!",
-            text: `Hi ${req.body.name}, Thank you for registering on Fretail!.`,
-            html: `<strong>Hi ${req.body.name}, Thank you for registering on Fretail!.</strong>`,
+        const newUser = {
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.pass
         };
-        sgMail.send(msg).then(()=>{
-            res.render("User/dashboard", {
-                title: "Your Account",
-                uName: req.body.name
-            })
-            console.log('Email sent');
-        }).catch(err=>(console.log(err)));
+        const user = new userModel(newUser);
+
+        user.save()
+        .then((user)=>{
+            //Sending welcome email to new user
+            const msg = {
+                to: req.body.email,
+                from: 'donotreply@Fretail.com',
+                subject: "Welcome to Fretail!",
+                text: `Hi ${req.body.name}, Thank you for registering on Fretail!.`,
+                html: `<strong>Hi ${req.body.name}, Thank you for registering on Fretail!.</strong>`,
+            };
+            sgMail.send(msg).then(()=>{
+                res.redirect("/user/login");
+                console.log('Email sent');
+            }).catch(err=>(console.log(err)));
+        })
+        .catch(err => {
+            res.render("User/register", {
+                title: "Registration",
+                userEmail: req.body.email,
+                userName: req.body.name,
+                nErrorMsg: nameErrorMsg,
+                nError: isNameError,
+                eErrorMsg: 'Email already in use!',
+                eError: true,
+                pErrorMsg: passErrorMsg,
+                pError: isPassError,
+                pAgainErrorMsg: passAgainErrorMsg,
+                pAgainError: isPassAgainError
+            });
+        });
+
+        
     }
   });
 
-  module.exports = router;
+//Logout:
+router.get("/logout", (req, res) => {
+    req.session.destroy();
+    res.redirect("/user/login");
+})
+
+module.exports = router;

@@ -18,7 +18,14 @@
                 </div>
                 <div class="c-title">{{this.title}}</div>
                 <div class="price">${{this.price}}</div>
-                <div><button>Add to Cart</button></div>
+                <div class="addToCartDiv">
+                    <form class="addToCart" action="/products/cart/{{this.id}}" method="POST">
+                    <button type="submit">Add to Cart</button>
+                    <input name="maxQuantity" type="hidden" value={{this.quantity}}>
+                    <input name="quantity" type="hidden" value="1">
+                    </form>
+                </div>
+                <a class="vProdLink" href="/products/view/{{this.id}}"><span class="vProdLinkSpan"></span></a>
             </div>
         {{/each}}
     </div>

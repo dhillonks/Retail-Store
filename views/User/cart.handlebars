@@ -1,0 +1,28 @@
+<div class="cartPageContainer">
+    <div class="cartPageHeading">Shopping cart</div>
+    <div class="shoppingCart">
+        {{#if noProducts}}
+        <div class="shoppingCartError">Cart is empty!
+            <br><br><a class="shoppingCartLink" href="/products">Shop now</a>
+        </div>
+        
+        {{else}}
+        <div class="shoppingCartPanel">
+            <div class="shProductImage"><img src="/img/1.jpg"></div>
+            <div class="shWrap">
+                <div class="shProductTitle">AirMax</div>
+                <div class="shProductDesc">Description: This is a beautiful shoe</div>
+                <div class="shProductPrice">Price: <span>$20</span></div>
+            </div>
+            <div class="shWrap2"></div>
+            <div class="shProductQuantity">Quantity: 10</div>
+            <div class="shProductTotal">Item Total: <span>$200</span></div>
+        </div>
+        <form class = "shoppingForm" action="/products/cart/{{pID}}" method="POST">
+            <div id="buttonWrapper">
+                <input id="submitButton" type="submit" value="Place Order">
+            </div>
+        </form>
+        {{/if}}
+    </div>
+</div>

@@ -16,6 +16,10 @@
 </head>
 <body>
     {{> header}}
+
+    {{#if user}}
+    {{> userDash}}
+    {{/if}}
     
     {{{body}}}
     
