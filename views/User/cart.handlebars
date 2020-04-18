@@ -5,20 +5,22 @@
         <div class="shoppingCartError">Cart is empty!
             <br><br><a class="shoppingCartLink" href="/products">Shop now</a>
         </div>
-        
         {{else}}
+        {{#each product}}
         <div class="shoppingCartPanel">
-            <div class="shProductImage"><img src="/img/1.jpg"></div>
+            <div class="shProductImage"><img src="{{this.image}}"></div>
             <div class="shWrap">
-                <div class="shProductTitle">AirMax</div>
-                <div class="shProductDesc">Description: This is a beautiful shoe</div>
-                <div class="shProductPrice">Price: <span>$20</span></div>
+                <div class="shProductTitle">{{this.title}}</div>
+                <div class="shProductDesc">Description: {{this.desc}}</div>
+                <div class="shProductPrice">Price: <span>${{this.price}}</span></div>
             </div>
             <div class="shWrap2"></div>
-            <div class="shProductQuantity">Quantity: 10</div>
-            <div class="shProductTotal">Item Total: <span>$200</span></div>
+            <div class="shProductQuantity">Quantity: {{this.quantity}}</div>
+            <div class="shProductTotal">Item Total: <span>${{this.itemTotal}}</span></div>
         </div>
-        <form class = "shoppingForm" action="/products/cart/{{pID}}" method="POST">
+        {{/each}}
+        <div class="cartPageHeading" style="background-color: white;">Order total : ${{orderTotal}}</div>
+        <form class = "shoppingForm" action="/user/cart/{{user._id}}" method="POST">
             <div id="buttonWrapper">
                 <input id="submitButton" type="submit" value="Place Order">
             </div>

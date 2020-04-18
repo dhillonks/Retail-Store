@@ -7,6 +7,7 @@ const categoriesModel = require('../model/productCategories');
 const bestSellersModel = require('../model/bestSellingProducts');
 const productModel = require('../model/products');
 const userModel = require('../model/user');
+const orderModel = require('../model/orders');
 const isLoggedIn = require('../middleware/auth');
 const dashBoardLoader = require('../middleware/authorization');
 
@@ -112,22 +113,128 @@ router.get("/dashboard", isLoggedIn, dashBoardLoader);
 //Cart:
 router.get("/cart", isLoggedIn, (req, res) => {
     if(req.session.noOfItems > 0){
-        isCartEmpty = false;
         //Get the products that are in the users cart:
         const userCart = req.session.userInfo.cart;
         const cartProdIDs = userCart.map(i => i.productID);
 
-        //Finding corresponding products
+        let cartProducts = [];
+        let orderTotal = 0;
+        //Finding corresponding products to generate summary:
         productModel.find({_id: {$in: cartProdIDs}})
         .then((products)=>{
-            console.log(products);
-        })
-        .catch(err=>console.log(err));
+            //Getting product details:
+            cartProducts = userCart.map(cartItem => {
+                let index = products.findIndex(p => p._id.toString() === cartItem.productID);
+                orderTotal += cartItem.quantity*products[index].price;
+                return{
+                    image: products[index].image,
+                    title: products[index].title,
+                    pID: cartItem.productID,
+                    desc: products[index].description,
+                    quantity: cartItem.quantity,
+                    price: products[index].price,
+                    itemTotal: cartItem.quantity*products[index].price
+                }
+            })
+            res.render("User/cart", {
+                title: "My Cart", 
+                noProducts: false,
+                product: cartProducts,
+                orderTotal: orderTotal
+            });
+
+        });
     }
     else{
         //Cart is empty
         res.render("User/cart", {title: "My Cart", noProducts: true});
     }
+})
+//Place order:
+router.post("/cart/:id", isLoggedIn, (req, res) => {
+    if(req.session.userInfo.cart.length > 0){
+        //Order object:
+        const myOrder = {
+            userID: req.session.userInfo._id,
+            cart: [],
+            total: 0
+        }
+        //Get user cart:
+        userModel.findOne({_id: req.session.userInfo._id})
+        .then(user => {
+            //Find products, get details for order and decrement quantity accordingly
+            let promises = [];
+            let pTotal = 0;
+            user.cart.forEach((cartItem, i) => {
+                //Finding product:
+                let x = productModel.findOne({_id: cartItem.productID})
+                .then(product => {
+                    //Adding product details to cart item:
+                    myOrder.cart[i] = {
+                        productName: product.title,
+                        productID: product._id,
+                        quantity: cartItem.quantity,
+                        price: product.price,
+                        itemTotal: cartItem.quantity*product.price
+                    }
+                    pTotal+=myOrder.cart[i].itemTotal;
+                    product.quantity = product.quantity - cartItem.quantity;
+                    let y = product.save();
+                    promises.push(y);
+                })
+                .catch(err => console.log(err));
+                promises.push(x);
+            })
+
+            let promises2 = [];
+            Promise.all(promises)
+            .then(() => {
+                myOrder.total = pTotal;
+                //Create order in the orders collection:
+                const order = new orderModel(myOrder);
+
+                let x = order.save()
+                .then((o)=>{
+                    console.log(o);
+                    //Generate email:
+                    let emailBody = generateEmail(myOrder.cart, o._id, user.name, o.total);
+                    const msg = {
+                        to: user.email,
+                        from: 'donotreply@Fretail.com',
+                        subject: "Order details: Fretail!",
+                        text: `Order details`,
+                        html: emailBody
+                    };
+                    let x1 = sgMail.send(msg).then(()=>{
+                        console.log('Email sent');
+                    }).catch(err=>(console.log(err)));
+                    promises2.push(x1);
+                })
+                .catch(err=>console.log(err))
+                promises2.push(x);
+            })
+            .catch(err=>console.log(err));
+
+            //Finally empty user cart:
+            Promise.all([...promises2, ...promises])
+            .then(() => {
+                //Empty cart:
+                user.cart.splice(0, user.cart.length);
+                req.session.userInfo = user;
+                //Update user cart:
+                userModel.updateOne({_id: user._id}, user)
+                .then(()=>res.redirect("/home"))
+                .catch(err=>console.log(err));
+            })
+            .catch(err => console.log(err))
+        })
+        .catch(err => console.log(err));
+    }
+    else{
+        //Nothing in the users cart:
+        res.redirect("/cart");
+    }
+
 })
 //Register Form:
 router.post("/register", (req, res) => {
@@ -259,5 +366,53 @@ router.get("/logout", (req, res) => {
     req.session.destroy();
     res.redirect("/user/login");
 })
+
+//Helper function to generate summary email when placing order:
+function generateEmail(updatedUserCart, orderID, username, orderTotal){
+    let headings = `<p><span style="font-family: Calibri, sans-serif; font-size: 18px;">Thank you for ordering on Fretail.</span></p>
+    <p><span style="font-size: 
+          18px;"><span style="font-family: Calibri, sans-serif;">Here are your product details:</span></span></p>`;
+    let tableBody = `<tr>
+    <td style="width: 25%; background-color: rgb(239, 239, 239);"><span style="font-size: 
+    18px;"><span style="font-family: 
+    Calibri, sans-serif;"><strong>Product Name</strong></span></span></td>
+        <td style="width: 25%; background-color: rgb(239, 239, 239);"><span style="font-size: 
+    18px;"><span style="font-family: 
+    Calibri, sans-serif;"><strong>Price</strong></span></span></td>
+        <td style="width: 25%; background-color: rgb(239, 239, 239);"><span style="font-size: 
+    18px;"><span style="font-family: 
+    Calibri, sans-serif;"><strong>Quantity</strong></span></span></td>
+        <td style="width: 25%; background-color: rgb(239, 239, 239);"><span style="font-size: 
+    18px;"><span style="font-family: 
+    Calibri, sans-serif;"><strong>Item Total</strong><br></span></span></td>
+    </tr>`;
+    let total = 0;
+    //Generating table rows for products
+    updatedUserCart.forEach(p => {
+        total+=p.itemTotal;
+        tableBody+= `<tr>
+        <td style="width: 25%; background-color: rgb(239, 239, 239);"><span style="font-size: 
+        18px;"><span style="font-family: 
+            Calibri, sans-serif;">${p.productName}</span></span></td>
+                <td style="width: 25%; background-color: rgb(239, 239, 239);"><span style="font-size: 
+        18px;"><span style="font-family: 
+            Calibri, sans-serif;">$${p.price}</span></span></td>
+                <td style="width: 25%; background-color: rgb(239, 239, 239);"><span style="font-size: 
+        18px;"><span style="font-family: 
+            Calibri, sans-serif;">${p.quantity}</span></span></td>
+                <td style="width: 25%; background-color: rgb(239, 239, 239);"><span style="font-size: 
+        18px;"><span style="font-family: 
+        Calibri, sans-serif;">${p.itemTotal}</span></span></td>
+        </tr>`;
+    });
+
+    let table = `<table style="width: 100%; border-collapse: collapse;"><tbody>${tableBody}</tbody></table>`;
+    let summary = `<p><span style="font-size: 20px;"><span style="font-family: Calibri, sans-serif;">Order total:&nbsp;</span><span style="font-family: Calibri, sans-serif; color: rgb(65, 168, 95);"><strong>$${total}</strong></span></span></p>
+    <p>Ordered By: ${username}</p>
+    <p><span style="font-family: Calibri, sans-serif; font-size: 18px;">Order date: ${Date().toString()}</span></p>
+    <p><span style="font-family: Calibri, sans-serif; font-size: 18px;">Order Number: ${orderID};</span></p>`;
+    
+    return `${headings}${table}${summary}`
+}
 
 module.exports = router;

@@ -3,7 +3,7 @@ const dashBoardLoader = (req, res) => {
         res.redirect("/inv");
     }
     else{
-        res.render("User/dashboard");
+        res.redirect("/user/cart");
     }
 }
 

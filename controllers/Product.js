@@ -127,12 +127,12 @@ router.post("/cart/:id", isLoggedIn, (req, res) => {
     userModel.findOne({_id: req.session.userInfo._id})
     .then((user)=>{
         let notAddedToCart = true;
-        if(req.body.quantity < req.body.maxQuantity){
+        if(req.body.quantity <= req.body.maxQuantity){
             //Check if the product already exists in the cart:
             let index = user.cart.findIndex(i => i.productID === req.params.id);
             if(index != -1){
                 //Ensuring that only quantity in stock is allocated on the cart
-                if(user.cart[index].quantity + req.body.quantity < req.body.maxQuantity){
+                if(user.cart[index].quantity + req.body.quantity <= req.body.maxQuantity){
                     //Increment the quantity:
                     user.cart[index].quantity+=req.body.quantity;
                     notAddedToCart = false;
@@ -156,7 +156,7 @@ router.post("/cart/:id", isLoggedIn, (req, res) => {
             req.session.userInfo = user;
             userModel.updateOne({_id: user._id}, user)
             .then(()=>{
-                res.redirect("/products");
+                res.redirect("/user/cart");
             })
             .catch(err=>console.log(err));
         }
